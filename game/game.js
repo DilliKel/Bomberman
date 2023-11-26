@@ -504,9 +504,7 @@ scene('lose', ( { score } ) => {
   })
 })
 
-const numPlayers = localStorage.getItem('numPlayers') || 1;
 
-// Inicia o jogo com base no número de jogadores
-go('game', { level: 0, score: 0, numPlayers });
+go('game', { level: 0, score: 0 });
 
 // FIM :)
