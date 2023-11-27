@@ -28,7 +28,7 @@ O jogo BomberMan pode ser jogado em modo solo ou em dupla. Ao iniciar o jogo, vo
 - Tecla Enter para colocar uma bomba.
 
 ## Acesse e Jogue
-Clique [aqui](https://bomberman-ashy.vercel.app/) para acessar e jogar BomberMan agora mesmo!
+Clique [aqui](https://bomberman-dillikel.vercel.app/) para acessar e jogar BomberMan agora mesmo!
 
 Divirta-se e boa sorte!
 
