@@ -6,29 +6,37 @@
   <link rel="icon" href="./game/img/icon.png" type="image/x-icon">
   <link rel="stylesheet" href="./css/style.css" />
 </head>
+  
 <body>
-  <div id="introduction" class="introducao">
-    <h1 class="texto-principal">Projeto Final de Computação Gráfica - Bomberman</h1>
-    
+  <header>
+    <a href="#" class="logo"><img src="./game/img/logo.png" class="logo" ></a>
+    <h1>Projeto Final de Computação Gráfica - Bomberman </h1>
+  </header>
+
+  <section id="introduction" class="introducao">
+    <h1 class="frase">SELECIONE UM MODO DE JOGO:</h1>
+
+    <div class="botao-container">
+      <form action="http://127.0.0.1:5500/player1.html" method="get">
+        <button class="botao-jogar" type="submit" name="_next">Jogar Sozinho</button>
+        <input type="hidden" name="_next" value="http://127.0.0.1:5500/player1.html">
+      </form>
+
+      <form action="http://127.0.0.1:5500/player2.html" method="get">
+        <button class="botao-jogar" type="submit" name="_next">Jogar em Dupla</button>
+        <input type="hidden" name="_next" value="http://127.0.0.1:5500/player2.html">
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <br>
     <h1 class="frase"><strong>Autores:</strong></h1>
     <ul class="lista-autores">
       <li>Guilherme Lucas Pereira Bernardo</li>
-      <br>
       <li>Kelvin Araújo Ferreira</li>
     </ul>
-
     <br>
-    <h1 class="frase">SELECIONE UM MODO DE JOGO:</h1>
-
-    <form action="https://bomberman-dillikel.vercel.app//player1.html" method="get">
-      <button class="botao-jogar" type="submit" name="_next">Jogar Sozinho</button>
-      <input type="hidden" name="_next" value="https://bomberman-dillikel.vercel.app//player1.html">
-    </form>
-
-    <form action="https://bomberman-dillikel.vercel.app//player2.html" method="get">
-      <button class="botao-jogar" type="submit" name="_next">Jogar em Dupla</button>
-      <input type="hidden" name="_next" value="https://bomberman-dillikel.vercel.app//player2.html">
-    </form>
-  </div>
+  </footer>
 </body>
 </html>
