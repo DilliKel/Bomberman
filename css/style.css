@@ -15,7 +15,7 @@ body {
 
 header {
   width: 100%;
-  padding: 10px 100px; /* padding para dar mais espaço ao header */
+  padding: 1px 100px; /* padding para dar mais espaço ao header */
   display: flex;
   align-items: center;
   justify-content: space-between;
