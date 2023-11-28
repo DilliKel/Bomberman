@@ -1,7 +1,7 @@
 kaboom({
   global: true,
   fullscreen: true,
-  scale: 1.8,
+  scale: 1.7,
   debug: true,
   clearColor: [0,0,0,1]
 })
