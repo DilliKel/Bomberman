@@ -504,7 +504,5 @@ scene('lose', ( { score } ) => {
   })
 })
 
-
 go('game', { level: 0, score: 0 });
-
 // FIM :)
