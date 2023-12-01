@@ -2,6 +2,7 @@ kaboom({
   global: true,
   fullscreen: true,
   debug: true,
+  scale: 1.6,
   clearColor: [0,0,0,1]
 })
  const MOVE_SPEED = 120;
