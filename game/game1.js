@@ -1,33 +1,36 @@
+// Modo SOLO
 kaboom({
   global: true,
   fullscreen: true,
+  scale: 1.7,
   debug: true,
-  scale: 1.6,
   clearColor: [0,0,0,1]
 })
+
  const MOVE_SPEED = 120;
  const ENEMY_SPEED = 60;
 
+loadRoot('./game/img/');
 
-loadSprite('wall-steel', './game/img/wall-steel.png'); // Bloco de ferro
-loadSprite('brick-red', './game/img/brick-red.png');   // Tijolinhos vermelhos
-loadSprite('door', './game/img/door.png');             // Porta
-loadSprite('kaboom', './game/img/kaboom.png');         // explosão!
-loadSprite('bg', './game/img/bg.png');                 // background
-loadSprite('wall-gold', './game/img/wall-gold.png');   // Muretinhas
-loadSprite('brick-wood', './game/img/brick-wood.png'); // Mureta
+loadSprite('wall-steel', './wall-steel.png');
+loadSprite('brick-red', './brick-red.png');   
+loadSprite('door', './door.png');             
+loadSprite('kaboom', './kaboom.png');        
+loadSprite('bg', './bg.png');                 
+loadSprite('wall-gold', './wall-gold.png');  
+loadSprite('brick-wood', './brick-wood.png'); 
 
-loadSprite('bomberman', './game/img/bomberman.png', {  // Personagem Bomberman
+loadSprite('bomberman', './bomberman.png', {
   sliceX: 7,
   sliceY: 4,
   anims: {
-    //Parado
+    //Parado Player1
     idleLeft: { from: 21, to: 21 },
     idleRight: { from: 7, to: 7 },
     idleUp: { from: 0, to: 0 },
     idleDown: { from: 14, to: 14 },
 
-    //Em movimento
+    //Em movimento Player1
     moveLeft: { from: 22 , to: 27  },
     moveRigth: { from: 8, to: 13 },
     moveUp: { from: 1, to: 6 },
@@ -35,7 +38,7 @@ loadSprite('bomberman', './game/img/bomberman.png', {  // Personagem Bomberman
   }
 });
 
-loadSprite('boomber', './game/img/boomber.png', { // Sprite da bomba
+loadSprite('boomber', './boomber.png', {
   sliceX: 3,
 
   anims: {
@@ -43,25 +46,23 @@ loadSprite('boomber', './game/img/boomber.png', { // Sprite da bomba
   }
 })
 
-loadSprite('baloon', './game/img/baloon.png', { sliceX: 3 })
-loadSprite('ghost', './game/img/ghost.png', { sliceX: 3 })
-loadSprite('slime', './game/img/slime.png', { sliceX: 3 })
+loadSprite('baloon', 'baloon.png', { sliceX: 3 })
+loadSprite('ghost', 'ghost.png', { sliceX: 3 })
+loadSprite('slime', 'slime.png', { sliceX: 3 })
 
-loadSprite('kaboom', './game/img/kaboom.png', { 
+
+loadSprite('explosion', 'explosion.png', { 
   sliceX: 5,
   sliceY: 5,
 })
 
-
-
-
 scene('game', ({level, score}) => {
-  layers(['bg', 'obj', 'ui'], 'obj');  //As camadas são definidas aqui
+  layers(['bg', 'obj', 'ui'], 'obj'); //As camadas são definidas aqui
 
   const maps = [
     [
       'aaaaaaaaaaaaaaa',
-      'azzzz  *zzzzzza',
+      'azzzz  *zzzzzda',
       'azazazazazazaza',
       'azzzzzzzzzzzzza',
       'azazazazazaza a',
@@ -78,7 +79,7 @@ scene('game', ({level, score}) => {
     ],
     [
       'bbbbbbbbbbbbbbb',
-      'bwwww  *wwwwwwb',
+      'bwwww  *wwwwwpb',
       'bwbwbwbwbwbwbwb',
       'b      *      b',
       'bwbwbwbwbwbwb b',
@@ -114,7 +115,6 @@ scene('game', ({level, score}) => {
 
   add([sprite('bg'), layer('bg')])
 
-
   const scoreLabel = add([
     text('Score: ' + score),
     pos(400, 30),
@@ -136,7 +136,7 @@ scene('game', ({level, score}) => {
     { dir: vec2(1,0) },
   ])
 
-  //Movimentação do Jogador 1
+  //------- Movimentação do Jogador 1 -------
   player.action(() => {
     player.pushOutAll()
   })
@@ -196,73 +196,9 @@ scene('game', ({level, score}) => {
   keyPress('space', () => {
     spawnBomber(player.pos.add(player.dir.scale(0)))
   })
+// --------- Fim Movimentação do Jogador1
 
-//----------- UM TESTE DOIDERA AKI
-
-function spawnKaboom(p, frame) {
-  // Verifica se a posição desejada está bloqueada por um bloco inquebrável
-  if (gameLevel.get(p).is('wall-steel')) {
-    return;
-  }
-
-  const obj = add([
-    sprite('kaboom', {
-      animeSpeed: 0.1,
-      frame: frame,
-    }),
-    pos(p),
-    scale(1.5),
-    'kaboom',
-  ]);
-
-  obj.pushOutAll();
-  wait(0.5, () => {
-    destroy(obj);
-  });
-}
-
-function spawnBomber(p, animation) {
-  const obj = add([
-    sprite('boomber', { anims: { move: { from: 0, to: 2 } } }),
-    animation,
-    pos(p),
-    scale(1.5),
-    'bomber',
-  ]);
-  
-  // Adiciona uma propriedade 'isAlive' para verificar se o objeto ainda está ativo
-  obj.isAlive = true;
-
-  obj.action(() => {
-    if (!obj.isAlive) return; // Verifica se o objeto ainda está ativo
-    obj.pushOutAll();
-  });
-
-  obj.play(animation);
-
-  wait(1, () => {
-    if (!obj.isAlive) return; // Verifica se o objeto ainda está ativo
-    obj.isAlive = false; // Define o objeto como não mais ativo
-    destroy(obj);
-
-    obj.dir = vec2(1, 0);
-    spawnKaboom(obj.pos.add(obj.dir.scale(0)), 12); // do centro
-
-    obj.dir = vec2(0, -1);
-    spawnKaboom(obj.pos.add(obj.dir.scale(20)), 2); // cima
-
-    obj.dir = vec2(0, 1);
-    spawnKaboom(obj.pos.add(obj.dir.scale(20)), 22); // baixo
-
-    obj.dir = vec2(-1, 0);
-    spawnKaboom(obj.pos.add(obj.dir.scale(20)), 10); // esquerda
-
-    obj.dir = vec2(1, 0);
-    spawnKaboom(obj.pos.add(obj.dir.scale(20)), 14); // direita
-  });
-}
-
-  //Ações dos inimigos
+//Ações dos inimigos
   action('baloon', (s) => {
     s.pushOutAll();
     s.move(s.dir * ENEMY_SPEED, 0)
@@ -293,8 +229,8 @@ function spawnBomber(p, animation) {
     }
   }) 
   
-  //--------------------------- FUNÇÕES ---------------------------
-  function spawnKaboom(p, frame){    // Função pra soltar a bomba
+//--------- Funções ---------
+  function spawnKaboom(p, frame){ // Função pra soltar a bomba
     const obj = add([
       sprite('kaboom', {
         animeSpeed: 0.1,
@@ -316,7 +252,7 @@ function spawnBomber(p, animation) {
     obj.pushOutAll();
     obj.play("move");
 
-    wait(1, () => {
+    wait(1, () => {  //Tempo de espera pra bomba bombar
       destroy(obj);
 
       obj.dir = vec2(1,0)
@@ -339,30 +275,19 @@ function spawnBomber(p, animation) {
     })
   }
 
-// --------------------------- COLISÕES ---------------------------
+//--------- Colisões ---------
 
-// Verificar colisão entre o jogador e a bomba
+// Verificar colisão entre o jogador e a explosão = (Morte Instantânea)
 player.overlaps('kaboom', () => {
   go('lose', { score: scoreLabel.value });
-});
-  
+}); // Explosão - Jogador 1
+
   player.collides('door', (d) => {
     go("game", {
       level: (level + 1) % maps.length,
       score: scoreLabel.value
     })
-  })
-
-// Colisão do jogador1 com a explosão (morte instantânea)
-  collides('kaboom', 'dangerous', (k,s) => {
-    camShake(4);
-     wait(1, () => {
-       destroy(k)
-     })
-     destroy(s);
-     scoreLabel.value++
-     scoreLabel.text = 'Score: ' + scoreLabel.value
-  })
+  }) // Entrar na porta - Jogador 1
 
   collides('kaboom', 'wall-brick', (k,s) => {
     camShake(4);
@@ -377,10 +302,6 @@ player.overlaps('kaboom', () => {
   })
 
   collides('slime', 'wall', (s) => {
-    s.dir = -s.dir;
-  })
-
-  collides('ghost', 'wall', (s) => {
     s.dir = -s.dir;
   })
 
