@@ -6,7 +6,6 @@ kaboom({
   debug: true,
   clearColor: [0,0,0,1]
 })
-
 const MOVE_SPEED = 120;
 const ENEMY_SPEED = 60;
 
@@ -38,6 +37,24 @@ loadSprite('bomberman', './bomberman.png', {
   }
 });
 
+loadSprite('bomberman2', './bomberman2.png', {
+  sliceX: 7,
+  sliceY: 4,
+  anims: {
+    //Parado Player2
+    idleLeft: { from: 21, to: 21 },
+    idleRight: { from: 7, to: 7 },
+    idleUp: { from: 0, to: 0 },
+    idleDown: { from: 14, to: 14 },
+
+    //Em movimento Player2
+    moveLeft: { from: 22 , to: 27  },
+    moveRigth: { from: 8, to: 13 },
+    moveUp: { from: 1, to: 6 },
+    moveDown: { from: 15, to: 20 },    
+  }
+});
+
 loadSprite('boomber', './boomber.png', { 
   sliceX: 3,
 
@@ -50,7 +67,12 @@ loadSprite('baloon', 'baloon.png', { sliceX: 3 })
 loadSprite('ghost', 'ghost.png', { sliceX: 3 })
 loadSprite('slime', 'slime.png', { sliceX: 3 })
 
-loadSprite('kaboom', './kaboom.png', { 
+loadSprite('explosion', 'explosion.png', { 
+  sliceX: 5,
+  sliceY: 5,
+})
+// Uma "redundância" aqui, pois temos duas sprites de explosão, me perdi no meio do código e fiquei usando as duas. Vulgo Gambiarra.
+loadSprite('kaboom', 'kaboom.png', { 
   sliceX: 5,
   sliceY: 5,
 })
@@ -136,7 +158,7 @@ scene('game', ({level, score}) => {
   ])
 
   const player2 = add([
-    sprite('bomberman', {
+    sprite('bomberman2', {
       animeSpeed: 0.1,
       frame: 14,
     }),
@@ -269,9 +291,74 @@ keyRelease('s', () => {
 // FIM Animação do jogador 2
 
 keyPress('enter', () => {
-  spawnBomber(player2.pos.add(player2.dir.scale(0)), 'move'); // Spawn Bomba do jogador 1
+  spawnBomber(player2.pos.add(player2.dir.scale(0)), 'move'); // Spawn Bomba do jogador 2
 });
 //--------- FIM INFORMAÇÕES DO JOGADOR 2 ------------
+
+//----------- UM TESTE QUE DEU CERTO AQUI
+
+function spawnKaboom(p, frame) {
+  // Verifica se a posição desejada está bloqueada por um bloco inquebrável
+  if (gameLevel.get(p).is('wall-steel')) {
+    return;
+  }
+
+  const obj = add([
+    sprite('kaboom', {
+      animeSpeed: 0.1,
+      frame: frame,
+    }),
+    pos(p),
+    scale(1.5),
+    'kaboom',
+  ]);
+
+  obj.pushOutAll();
+  wait(0.5, () => {
+    destroy(obj);
+  });
+}
+
+function spawnBomber(p, animation) {
+  const obj = add([
+    sprite('boomber', { anims: { move: { from: 0, to: 2 } } }),
+    animation,
+    pos(p),
+    scale(1.5),
+    'bomber',
+  ]);
+  
+  // Adiciona uma propriedade 'isAlive' para verificar se o objeto ainda está ativo
+  obj.isAlive = true;
+
+  obj.action(() => {
+    if (!obj.isAlive) return; // Verifica se o objeto ainda está ativo
+    obj.pushOutAll();
+  });
+
+  obj.play(animation);
+
+  wait(1, () => {
+    if (!obj.isAlive) return; // Verifica se o objeto ainda está ativo
+    obj.isAlive = false; // Define o objeto como não mais ativo
+    destroy(obj);
+
+    obj.dir = vec2(1, 0);
+    spawnKaboom(obj.pos.add(obj.dir.scale(0)), 12); // do centro
+
+    obj.dir = vec2(0, -1);
+    spawnKaboom(obj.pos.add(obj.dir.scale(20)), 2); // cima
+
+    obj.dir = vec2(0, 1);
+    spawnKaboom(obj.pos.add(obj.dir.scale(20)), 22); // baixo
+
+    obj.dir = vec2(-1, 0);
+    spawnKaboom(obj.pos.add(obj.dir.scale(20)), 10); // esquerda
+
+    obj.dir = vec2(1, 0);
+    spawnKaboom(obj.pos.add(obj.dir.scale(20)), 14); // direita
+  });
+}
 
 //Ações dos inimigos
   action('baloon', (s) => {
@@ -305,7 +392,7 @@ keyPress('enter', () => {
   }) 
   
 //--------- Funções ---------
-  function spawnKaboom(p, frame){    // Função pra soltar a bomba
+  function spawnKaboom(p, frame){ // Função pra soltar a bomba
     const obj = add([
       sprite('kaboom', {
         animeSpeed: 0.1,
@@ -374,6 +461,17 @@ player2.overlaps('kaboom', () => {
     });
   }); // Entrar na porta - Jogador 2
 
+  // Verificar colisão entre o jogador e a explosão = (Morte Instantânea)
+collides('kaboom', 'dangerous', (k,s) => {
+  camShake(4);
+   wait(1, () => {
+     destroy(k)
+   })
+   destroy(s);
+   scoreLabel.value++
+   scoreLabel.text = 'Score: ' + scoreLabel.value
+})
+
 // Colisão do Jogador 2 com os inimigos
 player2.overlaps('dangerous', () => {
   go('lose', { score: scoreLabel.value });
@@ -392,10 +490,6 @@ player2.overlaps('dangerous', () => {
   })
 
   collides('slime', 'wall', (s) => {
-    s.dir = -s.dir;
-  })
-
-  collides('ghost', 'wall', (s) => {
     s.dir = -s.dir;
   })
 
