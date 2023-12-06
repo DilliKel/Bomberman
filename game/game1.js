@@ -6,9 +6,8 @@ kaboom({
   debug: true,
   clearColor: [0,0,0,1]
 })
-
- const MOVE_SPEED = 120;
- const ENEMY_SPEED = 60;
+const MOVE_SPEED = 120;
+const ENEMY_SPEED = 60;
 
 loadRoot('./game/img/');
 
@@ -50,7 +49,6 @@ loadSprite('baloon', 'baloon.png', { sliceX: 3 })
 loadSprite('ghost', 'ghost.png', { sliceX: 3 })
 loadSprite('slime', 'slime.png', { sliceX: 3 })
 
-
 loadSprite('explosion', 'explosion.png', { 
   sliceX: 5,
   sliceY: 5,
@@ -62,7 +60,7 @@ scene('game', ({level, score}) => {
   const maps = [
     [
       'aaaaaaaaaaaaaaa',
-      'azzzz  *zzzzzda',
+      'azzzz  *zzzzzza',
       'azazazazazazaza',
       'azzzzzzzzzzzzza',
       'azazazazazaza a',
@@ -79,7 +77,7 @@ scene('game', ({level, score}) => {
     ],
     [
       'bbbbbbbbbbbbbbb',
-      'bwwww  *wwwwwpb',
+      'bwwww  *wwwwwwb',
       'bwbwbwbwbwbwbwb',
       'b      *      b',
       'bwbwbwbwbwbwb b',
@@ -194,7 +192,7 @@ scene('game', ({level, score}) => {
   })
 
   keyPress('space', () => {
-    spawnBomber(player.pos.add(player.dir.scale(0)))
+    spawnBomber(player.pos.add(player.dir.scale(0))) // Spawn Bomba do jogador 1
   })
 // --------- Fim Movimentação do Jogador1
 
@@ -232,7 +230,7 @@ scene('game', ({level, score}) => {
 //--------- Funções ---------
   function spawnKaboom(p, frame){ // Função pra soltar a bomba
     const obj = add([
-      sprite('kaboom', {
+      sprite('explosion', {
         animeSpeed: 0.1,
         frame: frame,
       }),
@@ -261,27 +259,18 @@ scene('game', ({level, score}) => {
       obj.dir = vec2(0, -1)
       spawnKaboom(obj.pos.add(obj.dir.scale(20)), 2) // cima
 
-      
       obj.dir = vec2(0, 1)
       spawnKaboom(obj.pos.add(obj.dir.scale(20)), 22) // baixo
-
       
       obj.dir = vec2(-1, 0)
       spawnKaboom(obj.pos.add(obj.dir.scale(20)), 10) // esquerda
 
       obj.dir = vec2(1, 0)
       spawnKaboom(obj.pos.add(obj.dir.scale(20)), 14) // direita
-
     })
   }
 
 //--------- Colisões ---------
-
-// Verificar colisão entre o jogador e a explosão = (Morte Instantânea)
-player.overlaps('kaboom', () => {
-  go('lose', { score: scoreLabel.value });
-}); // Explosão - Jogador 1
-
   player.collides('door', (d) => {
     go("game", {
       level: (level + 1) % maps.length,
@@ -318,10 +307,21 @@ player.overlaps('kaboom', () => {
     gameLevel.spawn('t', s.gridPos.sub(0,0))
   })
   
+// Verificar colisão entre o jogador e a explosão = (Morte Instantânea)
+  player.overlaps('kaboom', () => {
+  go('lose', { score: scoreLabel.value });
+}); // Explosão - Jogador 1
+
   player.collides('dangerous', () => {
     go('lose', {score: scoreLabel.value})
   })
 })
+
+
+
+
+
+
 
 scene('lose', ( { score } ) => {
   add([text('Score: '+ score, 32), origin('center'), pos(width() / 2, height() / 2)])
@@ -330,6 +330,13 @@ scene('lose', ( { score } ) => {
     go('game', { level: 0, score: 0 });
   })
 })
+
+// Funções incrementais:
+
+
+
+
+
 
 go('game', { level: 0, score: 0 });
 // FIM :)
